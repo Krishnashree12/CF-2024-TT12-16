@@ -1,5 +1,5 @@
 module fifo_memory #(parameter DATA_WIDTH = 8, ADDR_WIDTH = 4)(
-    input clk,
+    input wclk,rclk,
     input [ADDR_WIDTH-1:0] waddr, raddr,
     input [DATA_WIDTH-1:0] wdata,
     input wen, ren,
@@ -7,10 +7,15 @@ module fifo_memory #(parameter DATA_WIDTH = 8, ADDR_WIDTH = 4)(
 );
     reg [DATA_WIDTH-1:0] mem [(2**ADDR_WIDTH)-1:0];
 
-    always @(posedge clk) begin
-        if (wen)
-            mem[waddr] <= wdata;
-        if (ren)
-            rdata <= mem[raddr];
+    always @(posedge wclk) begin
+        if (wen && !full) begin
+          mem[waddr] <= wdata;
     end
-endmodule
+        
+    always @(posedge rclk) begin
+        if (ren && !empty) 
+          rdata <= mem[raddr];
+        else 
+          rdata <= {WIDTH{1'b0}};
+    end
+ endmodule
