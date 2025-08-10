@@ -44,7 +44,7 @@ module wptr_full #(parameter ADDR_WIDTH = 4)(
 
     always @(posedge wclk or negedge wrst_n) begin
         if (!wrst_n)
-            full <= 0;
+            full <= 1'b0;
         else
             full <= (wgray_next == {~rptr_sync[ADDR_WIDTH:ADDR_WIDTH-1], rptr_sync[ADDR_WIDTH-2:0]});
     end
