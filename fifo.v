@@ -10,7 +10,7 @@ module fifo #(parameter DATA_WIDTH = 8, ADDR_WIDTH = 4)(
     wire [ADDR_WIDTH:0] rptr_sync, wptr_sync;
 
     fifo_memory #(DATA_WIDTH, ADDR_WIDTH) mem (
-        .clk(wclk), .waddr(waddr), .raddr(raddr),
+        .wclk(wclk), .rclk(rclk), .waddr(waddr), .raddr(raddr),
         .wdata(wdata), .wen(winc & ~full), .ren(rinc & ~empty), .rdata(rdata)
     );
 
