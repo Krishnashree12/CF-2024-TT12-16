@@ -24,7 +24,7 @@ module rptr_empty #(parameter ADDR_WIDTH = 4)(
 
     always @(posedge rclk or negedge rrst_n) begin
         if (!rrst_n)
-            empty <= 1;
+            empty <= 1'b1;
         else
             empty <= (rgray_next == wptr_sync);
     end
