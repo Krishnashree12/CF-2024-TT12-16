@@ -1,8 +1,9 @@
-module fifo #(parameter DATA_WIDTH = 8, ADDR_WIDTH = 4)(
-    input wclk, wrst_n, winc,
-    input rclk, rrst_n, rinc,
-    input [3:0] wdata,
-    output [3:0] rdata,
+module fifo #(parameter DATA_WIDTH = 4, ADDR_WIDTH = 3)(
+    input  wrst_n, winc,
+    input  rrst_n, rinc,
+    output wclk,rclk,
+    input [DATA_WIDTH-1:0] wdata,
+    output [DATA_WIDTH-1:0] rdata,
     output full, empty,
      input  wire  clk,      // 100 MHz system clock
      input  wire  rst_n     // Reset (active low, usually button)
@@ -16,7 +17,7 @@ module fifo #(parameter DATA_WIDTH = 8, ADDR_WIDTH = 4)(
     // Clock dividers: generate slow clocks from system clock
    clock_div clk_div_inst (
         .clk(clk),
-        .reset(~rst_n),
+        .rst_n(rst_n),
         .wclk(wclk),
         .rclk(rclk)
     );
