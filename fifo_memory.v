@@ -1,9 +1,11 @@
-module fifo_memory #(parameter DATA_WIDTH = 8, ADDR_WIDTH = 4)(
+`timescale 1ns / 1ps
+
+module fifo_memory #(parameter DATA_WIDTH = 4, ADDR_WIDTH = 3)(
     input wire wclk, rclk,
     input wire [ADDR_WIDTH-1:0] waddr, raddr,
-    input wire [3:0] wdata,
+    input wire [DATA_WIDTH-1:0] wdata,
     input wire wen, ren,
-    output reg [3:0] rdata
+    output reg [DATA_WIDTH-1:0] rdata
 );
     reg [3:0] mem [(2**ADDR_WIDTH)-1:0];
 
@@ -16,9 +18,6 @@ module fifo_memory #(parameter DATA_WIDTH = 8, ADDR_WIDTH = 4)(
     always @(posedge rclk) begin
         if (ren) begin
           rdata <= mem[raddr];
-        end else begin
-          rdata <= {ADDR_WIDTH{1'b0}};
-       end
+        end 
     end
-
 endmodule
