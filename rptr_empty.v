@@ -1,4 +1,4 @@
-module rptr_empty #(parameter ADDR_WIDTH = 4)(
+module rptr_empty #(parameter ADDR_WIDTH = 3)(
     input rclk, rst_n, rinc,
     input [ADDR_WIDTH:0] wptr_sync,
     output reg empty,
@@ -20,7 +20,7 @@ module rptr_empty #(parameter ADDR_WIDTH = 4)(
     end
 
     assign raddr = rbin[ADDR_WIDTH-1:0];
-    assign rptr = rgray;
+    assign rptr  = rgray_next;
 
     always @(posedge rclk or negedge rst_n) begin
         if (!rst_n)
