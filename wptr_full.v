@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-module wptr_full #(parameter ADDR_WIDTH = 4)(
+module wptr_full #(parameter ADDR_WIDTH = 3)(
     input wclk, rst_n, winc,
     input [ADDR_WIDTH:0] rptr_sync,
     output reg full,
@@ -21,7 +21,7 @@ module wptr_full #(parameter ADDR_WIDTH = 4)(
     end
 
     assign waddr = wbin[ADDR_WIDTH-1:0];
-    assign wptr = wgray;
+    assign wptr  = wgray_next;
 
     always @(posedge wclk or negedge rst_n) begin
         if (!rst_n)
