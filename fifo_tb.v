@@ -1,124 +1,89 @@
 `timescale 1ns/1ps
 
-module fifo_tb();
+module fifo_tb;
+  // Parameters
+  parameter DSIZE = 4;
+  parameter ASIZE = 3;
+  localparam DEPTH = 1 << ASIZE;
+  // Signals
+  reg               clk;   // main simulation clock (100 MHz)
+  reg               rst_n;
+  wire              wclk, rclk;
+  reg               winc, rinc;
+  reg  [DSIZE-1:0]  wdata;
+  wire [DSIZE-1:0]  rdata;
+  wire              full, empty;
+  
+  // DUT instantiation
+  fifo #(.DSIZE(DSIZE), .ASIZE(ASIZE)) dut (
+      .clk  (clk),    
+      .rst_n  (rst_n),
+      .wclk    (wclk),
+      .rclk    (rclk),
+      .winc    (winc),
+      .rinc    (rinc),
+      .wdata   (wdata),
+      .rdata   (rdata),
+      .full   (full),
+      .empty  (empty)
+  );
 
-    parameter DSIZE = 8;      // Data bus size
-    parameter ASIZE = 4;      // Address bus size
-    parameter DEPTH = 1 << ASIZE;
+  // Main clock generation (100 MHz)
+  initial begin
+      clk = 0;
+      forever #5 clk = ~clk; // 10 ns period
+  end
 
-    reg  [3:0] wdata;
-    wire [3:0] rdata;
-    reg              winc, rinc;
-    reg              clk, rst_n;
-    wire full,empty;
-    
-        // Clock divider signals
-    wire wclk;
-    wire rclk;
-    // Instantiate FIFO DUT
-    clk_div clk_div ( 
-        .clk(clk),
-        .rst_n(~rst_n),
-        .wclk(wclk),
-        .rclk(rclk)
-    );
+  // Reset sequence
+  initial begin
+      rst_n = 0;
+      winc   = 0;
+      rinc   = 0;
+      wdata  = 0;
+      #50;             // hold reset
+      rst_n = 1;      // release write reset
+  end
 
-     fifo #(DSIZE, ASIZE) dut ( 
-        .rdata(rdata), 
-        .wdata(wdata),
-        .full(full),
-        .empty(empty),
-        .winc(winc), 
-        .rinc(rinc), 
-        .wclk(wclk), 
-        .rclk(rclk), 
-        .rst_n(rst_n)
-    );
-    integer i;
-    integer seed = 1;
+  // Write process (1-cycle pulse)
+  initial begin
+      @(posedge rst_n); // wait until write reset deasserted
+      forever begin
+          @(posedge wclk);
+          if (!full) begin
+              wdata <= wdata + 1;
+              winc  <= 1;
+          end else
+              winc  <= 0;
+          @(posedge wclk); // pulse only one cycle
+          winc <= 0;
+      end
+  end
 
-    // Clock generation
-    initial clk = 0;
-    always #5 clk = ~clk;
+  // Read process (1-cycle pulse)
+  initial begin
+      @(posedge rst_n); // wait until read reset deasserted
+      #30;              // wait so FIFO fills
+      forever begin
+          @(posedge rclk);
+          if (!empty)
+              rinc <= 1;
+          else
+              rinc <= 0;
+          @(posedge rclk); // pulse only one cycle
+          rinc <= 0;
+      end
+  end
 
-    initial begin
-        // Initialization
-        rst_n = 0;
-        winc = 0;
-        rinc = 0;
-        wdata = 0;
+  // Monitor FIFO transactions
+  initial begin
+      $display("Time\twdata\trdata\twfull\trempty");
+      $monitor("%0t\t%0h\t%0h\t%b\t%b", $time, wdata, rdata, full, empty);
+  end
 
-        // Apply Reset
-        $display("Applying Reset...");
-        #40;  
-        rst_n = 1;
-        $display("Reset Released at %0t", $time);
-
-        //--------------------------
-        // TEST 1: Write 8 values
-        //--------------------------
-        $display("----- Write Test -----");
-        for (i = 0; i < 8; i = i + 1) begin
-            wdata = $random(seed) % 16;
-            winc = 1;
-            rinc = 0;
-            #10;           // one write pulse
-            winc = 0;
-            #10;
-            $display("Wrote: %02x at %0t", wdata, $time);
-        end
-
-        //---------------------------
-        // TEST 2: Read them back
-        //---------------------------
-        $display("----- Read Test -----");
-        winc = 0; // no writes during readback
-        for (i = 0; i < 8; i = i + 1) begin
-            rinc = 1;
-            #10;
-            rinc = 0;
-            #10;
-            if (!empty)
-                $display("Read : %02x at %0t (empty=%0b, full=%0b)", rdata, $time, empty, full);
-            else
-                $display("Read blocked at %0t (EMPTY)", $time);
-        end
-
-        //---------------------------
-        // TEST 3: FIFO Overflow
-        //---------------------------
-        $display("----- FIFO Overflow Test -----");
-        rinc = 0;
-        for (i = 0; i < DEPTH + 3; i = i + 1) begin
-            wdata = $random(seed) % 256;
-            winc = 1;
-            #10;
-            if (full)
-                $display("Write blocked at %0t (FULL)", $time);
-            else
-                $display("Written: %02x at %0t", wdata, $time);
-            winc = 0;
-            #10;
-        end
-
-        //-----------------------------
-        // TEST 4: FIFO Underflow
-        //-----------------------------
-        $display("----- FIFO Underflow Test -----");
-        winc = 0;
-        for (i = 0; i < DEPTH + 3; i = i + 1) begin
-            rinc = 1;
-            #10;
-            if (empty)
-                $display("Read blocked at %0t (EMPTY)", $time);
-            else
-                $display("Read: %02x at %0t (empty=%0b)", rdata, $time, empty);
-            rinc = 0;
-            #10;
-        end
-
-        $display("Simulation Finished.");
-        $finish;
-    end
-
+  // Stop simulation
+  initial begin
+      #3000;
+      $finish;
+  end
+  
 endmodule
