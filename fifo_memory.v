@@ -8,7 +8,6 @@ module fifo_memory #(parameter DATA_WIDTH = 4, ADDR_WIDTH = 3)(
     output reg [DATA_WIDTH-1:0] rdata
 );
     reg [3:0] mem [(2**ADDR_WIDTH)-1:0];
-
     always @(posedge wclk) begin
         if (wen) begin
             mem[waddr] <= wdata;
