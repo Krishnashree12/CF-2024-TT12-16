@@ -30,3 +30,4 @@ module wptr_full #(parameter ADDR_WIDTH = 3)(
             full <= (wgray_next == {~rptr_sync[ADDR_WIDTH:ADDR_WIDTH-1], rptr_sync[ADDR_WIDTH-2:0]});
     end
 endmodule
+
