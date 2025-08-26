@@ -17,3 +17,4 @@ module two_ff_sync #(parameter PTR_WIDTH = 3)(
         end
     end
 endmodule
+
