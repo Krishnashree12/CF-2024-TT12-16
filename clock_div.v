@@ -16,16 +16,16 @@ module clock_div(
     end
 
     // ----------- rclk ÷3 (33.3 MHz) -----------
-    reg [1:0] cnt_rd;
+    reg [1:0] cnt;
     always @(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
-            cnt_rd <= 0;
+            cnt <= 0;
             rclk   <= 0;
-        end else if(cnt_rd == 2) begin
-            cnt_rd <= 0;
+        end else if(cnt == 2) begin
+            cnt <= 0;
             rclk   <= ~rclk;  // toggle every 3 cycles ? ÷6 overall
         end else
-            cnt_rd <= cnt_rd + 1;
+            cnt <= cnt + 1;
     end
 
 endmodule
