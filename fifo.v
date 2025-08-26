@@ -1,6 +1,6 @@
 module fifo #(parameter DATA_WIDTH = 4, ADDR_WIDTH = 3)(
-    input  wrst_n, winc,
-    input  rrst_n, rinc,
+    input   winc,
+    input   rinc,
     output wclk,rclk,
     input [DATA_WIDTH-1:0] wdata,
     output [DATA_WIDTH-1:0] rdata,
