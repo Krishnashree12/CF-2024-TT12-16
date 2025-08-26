@@ -11,7 +11,7 @@ module rptr_empty #(parameter ADDR_WIDTH = 3)(
 
     assign rbin_next = rbin + (rinc & ~empty);
     assign rgray_next = (rbin_next >> 1) ^ rbin_next;
-
+ 
     always @(posedge rclk or negedge rst_n) begin
         if (!rst_n)
             rbin <= 0;
