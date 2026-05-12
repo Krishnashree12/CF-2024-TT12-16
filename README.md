@@ -66,18 +66,14 @@ College of Engineering, Guindy, Anna University
 
 ## Architecture
 
-<p align="center">
-<img src=".\Blocks\Async_FIFO.png" alt="Alt Text" width="700">
-</p>
+<img width="1280" height="656" alt="image" src="https://github.com/user-attachments/assets/ed03a1c2-b511-4356-b691-aafb214f642a" />
 
 The design consists of the following blocks:
 
 ### 1. FIFO Top Module
 
 The top module connects the memory, write pointer logic, read pointer logic, and synchronizers.
-<p align="center">
-<img src=".\Blocks\FIFO.png" alt="Alt Text" width="700">
-</p>
+<img width="1542" height="516" alt="image" src="https://github.com/user-attachments/assets/eea2cfe5-824e-4368-8062-c81d20029ab0" />
 
 ### 2. FIFO Memory
 
@@ -85,9 +81,7 @@ The memory block stores incoming data and supports independent write and read op
 
 - Write operation occurs in the `wclk` domain  
 - Read operation occurs in the `rclk` domain
-<p align="center">
-<img src=".\Blocks\fifo_mem.png" alt="Alt Text" width="700">
-</p>
+<img width="1296" height="673" alt="image" src="https://github.com/user-attachments/assets/4e3125ac-5164-494b-8726-fb12a75d2896" />
 
 ### 3. Write Pointer and Full Logic
 
@@ -96,9 +90,7 @@ The write pointer block maintains the write address and generates the `full` fla
 - Binary pointer is used for address generation  
 - Gray pointer is used for clock domain crossing  
 - Full condition is detected using the synchronized read pointer
-<p align="center">
-<img src=".\Blocks\wptr_full.png" alt="Alt Text" width="700">
-</p>
+<img width="1538" height="665" alt="image" src="https://github.com/user-attachments/assets/814b82e1-ab9e-4f0d-81e6-2e86fa816541" />
 
 ### 4. Read Pointer and Empty Logic
 
@@ -107,9 +99,9 @@ The read pointer block maintains the read address and generates the `empty` flag
 - Binary pointer is used for address generation  
 - Gray pointer is used for clock domain crossing  
 - Empty condition is detected using the synchronized write pointer
-<p align="center">
-<img src=".\Blocks\rptr_empty.png" alt="Alt Text" width="700">
-</p>
+
+<img width="1534" height="683" alt="image" src="https://github.com/user-attachments/assets/6d6b07cc-3f93-45e7-b691-07eb4ae7c834" />
+
 
 ### 5. Two Flip-Flop Synchronizer
 
@@ -117,10 +109,9 @@ The synchronizer safely transfers pointers between clock domains.
 
 - `wptr` is synchronized into the read clock domain  
 - `rptr` is synchronized into the write clock domain
-<p align="center">
-<img src=".\Blocks\sync_w2r.png" alt="Alt Text" width="700">
-<img src=".\Blocks\sync_r2w.png" alt="Alt Text" width="700">
-</p>
+<img width="1389" height="485" alt="image" src="https://github.com/user-attachments/assets/afd05c06-c827-4e63-81c7-63a3025a7a7b" />
+<img width="1410" height="499" alt="image" src="https://github.com/user-attachments/assets/98d624b7-67d3-437b-956b-ca7982f090d8" />
+
 ---
 
 ## Clock Domain Crossing
@@ -186,9 +177,8 @@ The FIFO is completely read out to verify that additional reads are blocked when
 ---
 
 ## Simulation Observation
-<p align="center">
-<img src=".\Output Waveform\Output_waveform.png" alt="Alt Text" width="900">
-</p>
+<img width="1544" height="456" alt="image" src="https://github.com/user-attachments/assets/aaee1d7f-9b97-449b-a6b6-00d608e53b03" />
+
 The simulation confirms:
 
 The waveform shows correct FIFO behavior during simultaneous write and read operations. Initially, `rdata` appears as unknown (`X`) because the memory is not reset, which is expected. Once valid writes occur, the data appears at the read side in the correct order, confirming proper FIFO functionality. However, the `empty` signal does not deassert immediately after a write because the write pointer must pass through a two-stage synchronizer before being visible in the read clock domain. This introduces a delay of about two `rclk` cycles, followed by an additional one-cycle delay due to registered memory read, resulting in an overall latency of roughly three read clock cycles from write to visible read data.
