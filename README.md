@@ -12,6 +12,7 @@ College of Engineering, Guindy, Anna University
 
 Project Structure
 
+
 ├── src/
 |   └──Verilog
 │     ├── fifo.v
